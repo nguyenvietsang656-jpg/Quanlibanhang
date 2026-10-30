@@ -204,7 +204,7 @@ private void themSanPhamVaoBang() {
 
         if (rs.next()) {
 
-            double donGia = rs.getDouble("DonGia");
+            int donGia = rs.getInt("DonGia");
             int tonKho = rs.getInt("SoLuongTon");
             int soLuong = 1;
 
@@ -265,57 +265,57 @@ private void themSanPhamVaoBang() {
     PreparedStatement psKho = null;
 
     try {
-        // 1. Kết nối SQL Server
+       
         conn = Ketnoi.getConnection();
 
-        // Bắt đầu giao dịch (Transaction)
+      
         conn.setAutoCommit(false);
 
-        // 2. Tính tổng tiền từ bảng giỏ hàng
+        
         double tongTien = 0;
         for (int i = 0; i < tblGioHang.getRowCount(); i++) {
-            double donGia = Double.parseDouble(tblGioHang.getValueAt(i, 3).toString());
+            int donGia = Integer.parseInt(tblGioHang.getValueAt(i, 3).toString());
             int soLuong = Integer.parseInt(tblGioHang.getValueAt(i, 5).toString());
             tongTien += donGia * soLuong;
         }
 
-        // 3. Tự sinh mã hóa đơn kiểu chuỗi (VD: HD1712345678900)
+       
         String maHD = "HD" + System.currentTimeMillis();
 
-        // Thêm Hóa Đơn mới vào bảng HoaDon
+        
         String sqlHoaDon = "INSERT INTO HoaDon (MaHD, NgayLap, TongTien) VALUES (?, GETDATE(), ?)";
         psHD = conn.prepareStatement(sqlHoaDon);
         psHD.setString(1, maHD);
         psHD.setDouble(2, tongTien);
         psHD.executeUpdate();
 
-        // 4. Chuẩn bị câu lệnh thêm Chi Tiết Hóa Đơn và cập nhật Tồn Kho
+        
         String sqlChiTiet = "INSERT INTO ChiTietHoaDon (MaHD, MaSP,SOLuong,DonGia) VALUES (?, ?, ?, ?)";
         String sqlUpdateKho = "UPDATE SanPham SET SoLuongTon = SoLuongTon - ? WHERE MaSP = ? AND SoLuongTon >= ?";
 
         psCTHD = conn.prepareStatement(sqlChiTiet);
         psKho = conn.prepareStatement(sqlUpdateKho);
 
-        // Duyệt qua từng sản phẩm trong giỏ hàng để lưu chi tiết và trừ kho
+        
         for (int i = 0; i < tblGioHang.getRowCount(); i++) {
             String maSP = tblGioHang.getValueAt(i, 0).toString();
-            double donGia = Double.parseDouble(tblGioHang.getValueAt(i, 3).toString());
+            int donGia = Integer.parseInt(tblGioHang.getValueAt(i, 3).toString());
             int soLuong = Integer.parseInt(tblGioHang.getValueAt(i, 5).toString());
 
-            // A. Thêm vào bảng ChiTietHoaDon
+            
             psCTHD.setString(1, maHD);
             psCTHD.setString(2, maSP);
             psCTHD.setInt(3, soLuong);
-            psCTHD.setDouble(4, donGia);
+            psCTHD.setInt(4, donGia);
             psCTHD.executeUpdate();
 
-            // B. Trừ số lượng tồn kho trong bảng SanPham
+            
             psKho.setInt(1, soLuong);
             psKho.setString(2, maSP);
             psKho.setInt(3, soLuong);
             int ketQua = psKho.executeUpdate();
 
-            // Nếu không đủ hàng tồn kho
+            
             if (ketQua == 0) {
                 conn.rollback();
                 JOptionPane.showMessageDialog(this, "Sản phẩm " + maSP + " không đủ số lượng tồn kho!");
@@ -328,7 +328,7 @@ private void themSanPhamVaoBang() {
 
         JOptionPane.showMessageDialog(this, "Thanh toán và lưu hóa đơn thành công! (Mã HĐ: " + maHD + ")");
 
-        // Xóa giỏ hàng trên giao diện
+        
         model.setRowCount(0);
         txtTongTien.setText("0");
 
@@ -344,7 +344,7 @@ private void themSanPhamVaoBang() {
         JOptionPane.showMessageDialog(this, "Thanh toán thất bại: " + e.getMessage());
 
     } finally {
-        // Đóng các PreparedStatement và Connection để giải phóng tài nguyên
+       
         try {
             if (psHD != null) psHD.close();
             if (psCTHD != null) psCTHD.close();
@@ -387,9 +387,7 @@ private void themSanPhamVaoBang() {
 
     for (int i = 0; i < tblGioHang.getRowCount(); i++) {
 
-        double donGia = Double.parseDouble(
-                tblGioHang.getValueAt(i, 3).toString()
-        );
+        int donGia = Integer.parseInt(tblGioHang.getValueAt(i, 3).toString());
 
         int soLuong = Integer.parseInt(
                 tblGioHang.getValueAt(i, 5).toString()
@@ -416,17 +414,17 @@ private void themSanPhamVaoBang() {
 
         for (int i = 0; i < tblGioHang.getRowCount(); i++) {
 
-            // Cột 3 = Đơn giá
-            double donGia = Double.parseDouble(
+            
+            int donGia = Integer.parseInt(
                     tblGioHang.getValueAt(i, 3).toString()
             );
 
-            // Cột 4 = Số lượng tồn
+          
             int tonKho = Integer.parseInt(
                     tblGioHang.getValueAt(i, 4).toString()
             );
 
-            // Cột 5 = Số lượng
+          
             int soLuong;
 
             try {
@@ -449,11 +447,11 @@ private void themSanPhamVaoBang() {
                 soLuong = tonKho;
             }
 
-            // Cập nhật lại số lượng
+            
             tblGioHang.setValueAt(soLuong, i, 5);
         }
 
-        // Tính lại tổng tiền
+        
         tinhTongTien();
 
     } finally {
