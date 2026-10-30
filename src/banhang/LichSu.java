@@ -26,7 +26,7 @@ public class LichSu extends javax.swing.JFrame {
         modelHoaDon = (DefaultTableModel) tblHoaDon.getModel();
         modelChiTiet = (DefaultTableModel) tblChiTiet.getModel();
 
-        // Load danh sách hóa đơn khi mở form
+        
         TableHoaDon();
     }
     private void TableHoaDon() {
@@ -40,10 +40,10 @@ public class LichSu extends javax.swing.JFrame {
             while (rs.next()) {
                 String maHD = rs.getString("MaHD");
                 String ngayLap = rs.getString("NgayLap");
-                double tongTien = rs.getDouble("TongTien");
+                int tongTien = rs.getInt("TongTien");
 
                 modelHoaDon.addRow(new Object[]{
-                    maHD, ngayLap, String.format("%,.0f VNĐ", tongTien)
+                    maHD, ngayLap, String.format("%,d VNĐ", tongTien)
                 });
             }
         } catch (Exception e) {
@@ -51,7 +51,7 @@ public class LichSu extends javax.swing.JFrame {
         }
     }
 
-    // 2. Tải chi tiết hóa đơn theo MaHD lên bảng ChiTiet
+    
     private void ChiTietHoaDon(String maHD) {
         modelChiTiet.setRowCount(0);
         String sql = "SELECT c.MaSP, s.TenSP, c.SoLuong, c.DonGia "
@@ -68,11 +68,11 @@ public class LichSu extends javax.swing.JFrame {
                     String maSP = rs.getString("MaSP");
                     String tenSP = rs.getString("TenSP");
                     int soLuong = rs.getInt("SoLuong");
-                    double donGia = rs.getDouble("DonGia");
-                    double thanhTien = soLuong * donGia;
+                    int donGia = rs.getInt("DonGia");
+                    int thanhTien = soLuong * donGia;
 
                     modelChiTiet.addRow(new Object[]{
-                        maSP, tenSP, soLuong, String.format("%,.0f", donGia), String.format("%,.0f", thanhTien)
+                        maSP, tenSP, soLuong, String.format("%,d", donGia), String.format("%,d", thanhTien)
                     });
                 }
             }

@@ -323,7 +323,7 @@ private void themSanPhamVaoBang() {
             }
         }
 
-        // 5. Lưu toàn bộ thay đổi vào Database thành công
+        
         conn.commit();
 
         JOptionPane.showMessageDialog(this, "Thanh toán và lưu hóa đơn thành công! (Mã HĐ: " + maHD + ")");

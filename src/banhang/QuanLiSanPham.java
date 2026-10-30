@@ -39,7 +39,7 @@ public class QuanLiSanPham extends javax.swing.JFrame {
                     rs.getString("MaSP"),
                     rs.getString("TenSP"),
                     rs.getString("DonViTinh"),
-                    rs.getDouble("DonGia"),
+                    rs.getInt("DonGia"),
                     rs.getInt("SoLuongTon")
                 };
                 model.addRow(row);
@@ -57,7 +57,7 @@ public class QuanLiSanPham extends javax.swing.JFrame {
     txtDVT.setText("");
     txtDonGia.setText("");
     txtSoLuong.setText("");
-    txtMaSP.setEditable(true); // Cho phép nhập lại Mã SP khi thêm mới
+    txtMaSP.setEditable(true); 
 }
 
     /**
@@ -294,12 +294,12 @@ public class QuanLiSanPham extends javax.swing.JFrame {
         
         try {
             Connection conn = Ketnoi.getConnection();
-            // Cập nhật thông tin dựa vào Mã SP (MaSP là khóa chính nên dùng làm điều kiện WHERE)
+            
             String sql = "UPDATE SanPham SET TenSP = ?, DonViTinh = ?, DonGia = ?, SoLuongTon = ? WHERE MaSP = ?";
             PreparedStatement pstmt = conn.prepareStatement(sql);
             pstmt.setString(1, tenSP);
             pstmt.setString(2, dvt);
-            pstmt.setDouble(3, Double.parseDouble(donGiaStr));
+            pstmt.setInt(3, Integer.parseInt(donGiaStr));
             pstmt.setInt(4, Integer.parseInt(soLuongStr));
             pstmt.setString(5, maSP);
             
@@ -337,7 +337,7 @@ public class QuanLiSanPham extends javax.swing.JFrame {
                 int rowsDeleted = pstmt.executeUpdate();
                 if (rowsDeleted > 0) {
                     JOptionPane.showMessageDialog(this, "Xóa sản phẩm thành công!");
-                    DuLieuBang(); // Cập nhật lại bảng
+                    DuLieuBang();
                     LamMoi();
                 }
                 pstmt.close();
@@ -358,7 +358,7 @@ public class QuanLiSanPham extends javax.swing.JFrame {
             txtDonGia.setText(model.getValueAt(row, 3).toString());
             txtSoLuong.setText(model.getValueAt(row, 4).toString());
             
-            // Khóa ô Mã SP lại khi sửa để tránh người dùng sửa đổi khóa chính gây lỗi
+            
             txtMaSP.setEditable(false); 
         }
     }//GEN-LAST:event_tblGioHangMouseClicked
